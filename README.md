@@ -89,8 +89,14 @@ processed or alerted on twice, even across restarts.
 The scraper builds a single query like:
 
 ```
-(@BitrueOfficial OR "Bitrue") -is:retweet -from:BitrueOfficial
+(@BitrueOfficial OR to:BitrueOfficial OR "Bitrue") -is:retweet -from:BitrueOfficial
 ```
+
+- `@BitrueOfficial` catches tweets that mention/tag the account.
+- `to:BitrueOfficial` catches **replies to Bitrue's own tweets**, even when
+  the reply text doesn't literally contain "@BitrueOfficial" (X still tracks
+  who a reply is directed at even if the visible @mention is deleted).
+- `"Bitrue"` catches any tweet containing that keyword.
 
 - Retweets are excluded (pure reposts add noise, no new text to review).
 - Replies and quote tweets ARE included, since complaints/questions often show

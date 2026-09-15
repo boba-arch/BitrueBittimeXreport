@@ -39,13 +39,24 @@ DEBUG = os.getenv("DEBUG", "0") == "1"
 def build_search_query() -> str:
     """Build the X API v2 recent-search query string.
 
-    Matches mentions of any tracked account (@handle) OR any tracked keyword,
-    and excludes retweets (pure reposts add noise without new text).
+    Matches:
+      - any tweet that mentions/tags a tracked account (the `@handle` operator
+        matches mentions of that account, NOT posts authored by it)
+      - OR any tweet containing a tracked keyword
+
+    Excludes:
+      - retweets (pure reposts add noise without new text)
+      - posts authored BY the tracked accounts themselves (explicit `-from:`,
+        as a belt-and-suspenders guard even though `@handle` alone shouldn't
+        pull in their own posts) -- so only what OTHER people say about
+        Bitrue/Bittime is captured, never the brand's own tweets.
     """
     account_terms = [f"@{acct}" for acct in X_TRACK_ACCOUNTS]
     keyword_terms = [f'"{kw}"' for kw in X_TRACK_KEYWORDS]
     all_terms = account_terms + keyword_terms
-    return f"({' OR '.join(all_terms)}) -is:retweet"
+    match_clause = f"({' OR '.join(all_terms)})"
+    exclude_self = " ".join(f"-from:{acct}" for acct in X_TRACK_ACCOUNTS)
+    return f"{match_clause} -is:retweet {exclude_self}".strip()
 
 
 def validate() -> list[str]:

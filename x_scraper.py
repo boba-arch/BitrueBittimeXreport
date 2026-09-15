@@ -1,6 +1,7 @@
 """Polls the X API v2 recent-search endpoint for new mentions/keywords."""
 import logging
 import time
+from datetime import datetime, timedelta, timezone
 
 import requests
 
@@ -27,6 +28,11 @@ def fetch_new_tweets() -> list[dict]:
     Handles pagination (next_token) and the since_id watermark so each tweet
     is only ever processed once. Returns a list of plain dicts ready for
     db.insert_tweet.
+
+    On a cold start (no since_id saved yet -- e.g. first ever run, or a fresh
+    deploy without a persistent volume), this does NOT pull X's full 7-day
+    recent-search history. Instead it uses `start_time` to only look back
+    INITIAL_LOOKBACK_MINUTES, so you don't get flooded with days-old tweets.
     """
     query = config.build_search_query()
     since_id = db.get_meta(SINCE_ID_META_KEY)
@@ -45,6 +51,13 @@ def fetch_new_tweets() -> list[dict]:
         }
         if since_id:
             params["since_id"] = since_id
+        else:
+            # Cold start: cap how far back we look instead of defaulting to
+            # X's full 7-day recent-search window.
+            start_time = datetime.now(timezone.utc) - timedelta(
+                minutes=config.INITIAL_LOOKBACK_MINUTES
+            )
+            params["start_time"] = start_time.strftime("%Y-%m-%dT%H:%M:%SZ")
         if next_token:
             params["next_token"] = next_token
 

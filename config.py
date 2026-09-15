@@ -33,6 +33,10 @@ X_TRACK_KEYWORDS = _split_csv(os.getenv("X_TRACK_KEYWORDS", "Bitrue,Bittime"))
 # --- Timing ---
 SCRAPE_INTERVAL_MINUTES = int(os.getenv("SCRAPE_INTERVAL_MINUTES", "5"))
 REPORT_INTERVAL_MINUTES = int(os.getenv("REPORT_INTERVAL_MINUTES", "60"))
+# On the very first run (no watermark saved yet), how far back to look instead
+# of pulling X's full 7-day recent-search history. Keep this close to
+# SCRAPE_INTERVAL_MINUTES so a cold start only grabs genuinely recent tweets.
+INITIAL_LOOKBACK_MINUTES = int(os.getenv("INITIAL_LOOKBACK_MINUTES", "10"))
 
 # --- Misc ---
 DB_PATH = os.getenv("DB_PATH", "data/tweets.db")

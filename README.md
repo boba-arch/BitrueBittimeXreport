@@ -63,6 +63,14 @@ processed or alerted on twice, even across restarts.
    Stop with Ctrl+C. For continuous operation, run it under `systemd`, `tmux`,
    `screen`, `pm2`, or a small Docker container/cron-friendly host.
 
+   To generate and send one PDF report on demand (without waiting for the
+   next scheduled interval, and without starting the scheduler loop):
+   ```bash
+   python main.py --report-now
+   ```
+   This picks up whatever's been classified since the last report (same
+   logic the scheduled report uses) and sends it right away.
+
 ## Getting your Telegram chat ID
 
 1. Create a bot with [@BotFather](https://t.me/BotFather), grab the token.

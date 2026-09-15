@@ -17,11 +17,13 @@ Stage 3 - REPORT (every REPORT_INTERVAL_MINUTES, default 60):
     reasoning, renders a PDF, and sends it to Telegram.
 
 Run:
-    python main.py
+    python main.py                # start the full scheduler loop (default)
+    python main.py --report-now   # generate + send one PDF report immediately, then exit
 
 Stop with Ctrl+C. Designed to run continuously (e.g. under systemd, tmux, or a
 Docker container) since it uses an in-process scheduler loop.
 """
+import argparse
 import logging
 import time
 
@@ -100,6 +102,16 @@ def report_job() -> None:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Bitrue/Bittime X monitor")
+    parser.add_argument(
+        "--report-now",
+        action="store_true",
+        help="Generate and send one PDF report immediately for whatever is "
+        "queued (everything classified since the last report), then exit "
+        "without starting the scheduler.",
+    )
+    args = parser.parse_args()
+
     problems = config.validate()
     if problems:
         log.error("Configuration problems found:")
@@ -109,6 +121,12 @@ def main() -> None:
         return
 
     db.init_db()
+
+    if args.report_now:
+        log.info("Generating on-demand PDF report...")
+        report_job()
+        return
+
     log.info(
         "Tracking accounts=%s keywords=%s | scrape+alert every %dm | report every %dm",
         config.X_TRACK_ACCOUNTS,

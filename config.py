@@ -17,8 +17,7 @@ ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 ANTHROPIC_CLASSIFY_MODEL = os.getenv("ANTHROPIC_CLASSIFY_MODEL", "claude-haiku-4-5-20251001")
 ANTHROPIC_REPORT_MODEL = os.getenv("ANTHROPIC_REPORT_MODEL", "claude-sonnet-5")
 # Max tokens Claude can use per tweet classification. Higher = more room for
-# the model to actually reason about nuance before answering (default was a
-# tight 200; bumped up so borderline/ambiguous tweets get a fuller read).
+# the model to actually reason about nuance before answering.
 ANTHROPIC_CLASSIFY_MAX_TOKENS = int(os.getenv("ANTHROPIC_CLASSIFY_MAX_TOKENS", "1024"))
 
 # --- Telegram ---
@@ -27,8 +26,8 @@ TELEGRAM_ALERT_CHAT_ID = os.getenv("TELEGRAM_ALERT_CHAT_ID", "")
 TELEGRAM_REPORT_CHAT_ID = os.getenv("TELEGRAM_REPORT_CHAT_ID", "") or TELEGRAM_ALERT_CHAT_ID
 
 # --- Monitoring targets ---
-X_TRACK_ACCOUNTS = _split_csv(os.getenv("X_TRACK_ACCOUNTS", "BitrueOfficial,bittimeexchange"))
-X_TRACK_KEYWORDS = _split_csv(os.getenv("X_TRACK_KEYWORDS", "Bitrue,Bittime"))
+X_TRACK_ACCOUNTS = _split_csv(os.getenv("X_TRACK_ACCOUNTS", "BitrueOfficial"))
+X_TRACK_KEYWORDS = _split_csv(os.getenv("X_TRACK_KEYWORDS", "Bitrue"))
 
 # --- Timing ---
 SCRAPE_INTERVAL_MINUTES = int(os.getenv("SCRAPE_INTERVAL_MINUTES", "5"))
@@ -47,17 +46,9 @@ DEBUG = os.getenv("DEBUG", "0") == "1"
 def build_search_query() -> str:
     """Build the X API v2 recent-search query string.
 
-    Matches:
-      - any tweet that mentions/tags a tracked account (the `@handle` operator
-        matches mentions of that account, NOT posts authored by it)
-      - OR any tweet containing a tracked keyword
-
-    Excludes:
-      - retweets (pure reposts add noise without new text)
-      - posts authored BY the tracked accounts themselves (explicit `-from:`,
-        as a belt-and-suspenders guard even though `@handle` alone shouldn't
-        pull in their own posts) -- so only what OTHER people say about
-        Bitrue/Bittime is captured, never the brand's own tweets.
+    Matches mentions of any tracked account (@handle) OR any tracked keyword,
+    excludes retweets, and excludes posts authored by the tracked accounts
+    themselves, so only what OTHER people say is caught.
     """
     account_terms = [f"@{acct}" for acct in X_TRACK_ACCOUNTS]
     keyword_terms = [f'"{kw}"' for kw in X_TRACK_KEYWORDS]

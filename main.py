@@ -103,7 +103,7 @@ def report_job() -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Bitrue/Bittime X monitor")
+    parser = argparse.ArgumentParser(description="Bitrue X monitor")
     parser.add_argument(
         "--scrape-now",
         action="store_true",

@@ -39,7 +39,7 @@ def _get_client() -> anthropic.Anthropic:
 
 
 REPORT_SYSTEM_PROMPT = """You write short, plain-English social-listening reports for \
-a crypto exchange's ops team covering Bitrue and Bittime. You will be given a list of \
+a crypto exchange's ops team covering Bitrue. You will be given a list of \
 tweets from the last reporting window, each with the AI triage category and reasoning \
 already applied. Write a concise report (150-300 words) covering:
 1. Overall volume and sentiment/tone at a glance.
@@ -144,11 +144,11 @@ def _build_pdf(
         bottomMargin=0.75 * inch,
         leftMargin=0.75 * inch,
         rightMargin=0.75 * inch,
-        title="Bitrue/Bittime X Monitor Report",
+        title="Bitrue X Monitor Report",
     )
     story = []
 
-    story.append(Paragraph("Bitrue / Bittime X (Twitter) Monitor Report", styles["ReportTitle"]))
+    story.append(Paragraph("Bitrue X (Twitter) Monitor Report", styles["ReportTitle"]))
     story.append(
         Paragraph(
             f"Window: last {window_label} &nbsp;|&nbsp; "
@@ -232,7 +232,7 @@ def generate_report() -> tuple[str, str]:
     db.mark_included_in_report([t["tweet_id"] for t in tweets])
 
     caption = (
-        f"\U0001F4CA Bitrue/Bittime X monitor \u2014 last {window_label}\n"
+        f"\U0001F4CA Bitrue X monitor \u2014 last {window_label}\n"
         f"Total: {total_count} | Useful: {useful_count}"
     )
     return filename, caption

@@ -1,7 +1,7 @@
 """Uses Claude to classify tweets as 'useful' (worth a human's attention) or not.
 
 Useful  = complaints, genuine questions, advice, recommendations -- signal that
-          Bitrue/Bittime's team would actually want to see and act on.
+          Bitrue team would actually want to see and act on.
 Not useful = promotional/marketing copy, KOL (influencer) shill posts, spam,
           generic hype with no actionable content.
 """
@@ -25,8 +25,8 @@ def _get_client() -> anthropic.Anthropic:
 
 
 SYSTEM_PROMPT = """You are a triage assistant for a crypto exchange's social listening \
-pipeline. You will be given a single tweet that mentions "Bitrue", "Bittime", \
-@BitrueOfficial, or @bittimeexchange.
+pipeline. You will be given a single tweet that mentions "Bitrue" or \
+@BitrueOfficial.
 
 Think through the tweet carefully before answering: consider the tone, whether \
 it reads as a real personal experience vs. copy-paste marketing, whether it \
@@ -44,7 +44,7 @@ Classify the tweet into exactly one category:
 - "other": anything else (news mentions, unrelated context, jokes, etc.)
 
 A tweet is "useful" (useful=true) only if it is a complaint, genuine question, \
-advice, or genuine recommendation that a human on the Bitrue/Bittime team should \
+advice, or genuine recommendation that a human on the Bitrue team should \
 actually read and possibly respond to. Promotional/marketing/KOL hype and "other" \
 are NOT useful.
 

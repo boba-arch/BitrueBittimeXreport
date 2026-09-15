@@ -1,9 +1,13 @@
-# Bitrue / Bittime X (Twitter) Monitor
+# Bitrue X (Twitter) Monitor
 
-Watches X (Twitter) for mentions of `@BitrueOfficial`, `@bittimeexchange`, and the
-keywords "Bitrue" / "Bittime", filters out promo/marketing/KOL noise with Claude,
+Watches X (Twitter) for mentions of `@BitrueOfficial` and the keyword
+"Bitrue", filters out promo/marketing/KOL noise with Claude,
 sends the important stuff (complaints, genuine questions, advice, recommendations)
 to a Telegram channel, and posts a periodic AI-written summary report.
+
+> This repo tracks **Bitrue only**. There's a sibling repo, `bittime-x-monitor`,
+> that tracks `@bittimeexchange` / "Bittime" — same code, separate deployment,
+> separate Telegram chats, separate database, so the two brands never mix.
 
 ## How it works
 
@@ -85,7 +89,7 @@ processed or alerted on twice, even across restarts.
 The scraper builds a single query like:
 
 ```
-(@BitrueOfficial OR @bittimeexchange OR "Bitrue" OR "Bittime") -is:retweet
+(@BitrueOfficial OR "Bitrue") -is:retweet -from:BitrueOfficial
 ```
 
 - Retweets are excluded (pure reposts add noise, no new text to review).
@@ -96,7 +100,7 @@ The scraper builds a single query like:
   (within X API's recent-search 7-day window).
 - Recent-search query length limits depend on your API access tier; if you
   add many more accounts/keywords and hit a 400 error mentioning query length,
-  trim the list or split into two scrapers with separate `DB_PATH`s.
+  trim the list.
 
 ## Classification logic
 

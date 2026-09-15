@@ -101,6 +101,12 @@ def scrape_and_store() -> int:
     for tw in tweets:
         if db.insert_tweet(tw):
             inserted += 1
+            log.info(
+                "Caught tweet from @%s: %s  (%s)",
+                tw.get("author_username") or "unknown",
+                tw["text"],
+                tw.get("url"),
+            )
     if inserted:
         log.info("Stored %d new tweet(s).", inserted)
     else:

@@ -28,6 +28,13 @@ SYSTEM_PROMPT = """You are a triage assistant for a crypto exchange's social lis
 pipeline. You will be given a single tweet that mentions "Bitrue", "Bittime", \
 @BitrueOfficial, or @bittimeexchange.
 
+Think through the tweet carefully before answering: consider the tone, whether \
+it reads as a real personal experience vs. copy-paste marketing, whether it \
+contains a specific/actionable detail (an order ID, a specific bug, a specific \
+question), and whether an account posting mostly hype/referral-link content \
+would plausibly write this. Weigh ambiguous cases explicitly rather than \
+defaulting to one category.
+
 Classify the tweet into exactly one category:
 - "complaint": user reporting a problem, bug, frozen funds, bad support experience, scam concern, etc.
 - "question": a genuine question about the product, account, fees, listings, etc.
@@ -43,7 +50,7 @@ are NOT useful.
 
 Respond with ONLY a single JSON object, no markdown fences, no preamble, in \
 exactly this shape:
-{"useful": true or false, "category": "one of the categories above", "reasoning": "one concise sentence explaining the call"}
+{"useful": true or false, "category": "one of the categories above", "reasoning": "2-4 sentences walking through what in the tweet's wording, tone, and content drove this call, including why you ruled out the next most plausible category"}
 """
 
 
@@ -57,7 +64,7 @@ def classify_tweet(text: str) -> dict:
     try:
         response = client.messages.create(
             model=config.ANTHROPIC_CLASSIFY_MODEL,
-            max_tokens=200,
+            max_tokens=config.ANTHROPIC_CLASSIFY_MAX_TOKENS,
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": f"Tweet:\n{text}"}],
         )

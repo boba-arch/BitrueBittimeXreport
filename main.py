@@ -40,6 +40,14 @@ def scrape_classify_alert_job() -> None:
             db.mark_classified(
                 tweet["tweet_id"], result["useful"], result["category"], result["reasoning"]
             )
+            log.info(
+                "Classified @%s [%s | useful=%s]: %s\n    Reasoning: %s",
+                tweet["author_username"] or "unknown",
+                result["category"],
+                result["useful"],
+                tweet["text"],
+                result["reasoning"],
+            )
         if pending:
             log.info("Classified %d tweet(s).", len(pending))
     except Exception:

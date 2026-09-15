@@ -16,6 +16,10 @@ X_BEARER_TOKEN = os.getenv("X_BEARER_TOKEN", "")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 ANTHROPIC_CLASSIFY_MODEL = os.getenv("ANTHROPIC_CLASSIFY_MODEL", "claude-haiku-4-5-20251001")
 ANTHROPIC_REPORT_MODEL = os.getenv("ANTHROPIC_REPORT_MODEL", "claude-sonnet-5")
+# Max tokens Claude can use per tweet classification. Higher = more room for
+# the model to actually reason about nuance before answering (default was a
+# tight 200; bumped up so borderline/ambiguous tweets get a fuller read).
+ANTHROPIC_CLASSIFY_MAX_TOKENS = int(os.getenv("ANTHROPIC_CLASSIFY_MAX_TOKENS", "1024"))
 
 # --- Telegram ---
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")

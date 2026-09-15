@@ -18,6 +18,7 @@ Stage 3 - REPORT (every REPORT_INTERVAL_MINUTES, default 60):
 
 Run:
     python main.py                # start the full scheduler loop (default)
+    python main.py --scrape-now   # run one scrape+classify+alert cycle immediately, then exit
     python main.py --report-now   # generate + send one PDF report immediately, then exit
 
 Stop with Ctrl+C. Designed to run continuously (e.g. under systemd, tmux, or a
@@ -104,6 +105,12 @@ def report_job() -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Bitrue/Bittime X monitor")
     parser.add_argument(
+        "--scrape-now",
+        action="store_true",
+        help="Run one scrape + classify + alert cycle immediately, then exit "
+        "without starting the scheduler.",
+    )
+    parser.add_argument(
         "--report-now",
         action="store_true",
         help="Generate and send one PDF report immediately for whatever is "
@@ -121,6 +128,11 @@ def main() -> None:
         return
 
     db.init_db()
+
+    if args.scrape_now:
+        log.info("Running one on-demand scrape + classify + alert cycle...")
+        scrape_then_classify_and_alert()
+        return
 
     if args.report_now:
         log.info("Generating on-demand PDF report...")

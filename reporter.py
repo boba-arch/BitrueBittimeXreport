@@ -5,7 +5,8 @@ PDF and sent to Telegram.
 import logging
 import os
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+REPORT_TZ = timezone(timedelta(hours=8))  # UTC+8
 from html import escape
 
 import anthropic
@@ -39,7 +40,7 @@ def _format_timestamp(raw: str | None) -> str:
         # X API uses "...Z"; our own fetched_at uses "+00:00" -- normalize both.
         cleaned = raw.replace("Z", "+00:00")
         dt = datetime.fromisoformat(cleaned)
-        return dt.strftime("%Y-%m-%d %H:%M UTC")
+        return dt.astimezone(REPORT_TZ).strftime("%Y-%m-%d %H:%M UTC+8")
     except (ValueError, TypeError):
         return ""
 
@@ -168,7 +169,7 @@ def _build_pdf(
     story.append(
         Paragraph(
             f"Window: last {window_label} &nbsp;|&nbsp; "
-            f"Generated: {now.strftime('%Y-%m-%d %H:%M UTC')}",
+            f"Generated: {now.astimezone(REPORT_TZ).strftime('%Y-%m-%d %H:%M UTC+8')}",
             styles["Meta"],
         )
     )
